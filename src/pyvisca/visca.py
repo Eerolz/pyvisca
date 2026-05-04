@@ -393,30 +393,30 @@ class PTZ(Camera):
         :rtype: bool
         """
         return self.comm('81010604FF')
-    
+
     def inq(self, com):
         """Sends an inquiry message into the VISCA PTZ camera,
-        then return any pending response buffer that comes afterwards.
-        
+        then return any response until it includes the VISCA endbytes, "ff".
+
         :param com: Command string (inquiry message). Hexadecimal format.
         :return: A string comprising the response packets.
         """
         # Clear any existing previous pending input buffer
         super(self.__class__, self).reset_input_buffer()
-        
+
         # Send the inquiry message
         super(self.__class__, self).command(com)
-        
-        # Wait until any response packet is received
+
+        # Wait until response packet containing the endbytes are received
         x = ''
-        while x == '':
-            x = super(self.__class__, self).read()
-            if x != '':
+        while "ff" not in x:
+            x += super(self.__class__, self).read()
+            if "ff" in x:
                 break
-        
+
         # Return the response packet
         return x
-    
+
     def iris_down(self):
         """Turn down the camera's iris setting.
         
