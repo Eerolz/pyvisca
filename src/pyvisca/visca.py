@@ -394,11 +394,12 @@ class PTZ(Camera):
         """
         return self.comm('81010604FF')
 
-    def inq(self, com):
+    def inq(self, com, terminator="ff"):
         """Sends an inquiry message into the VISCA PTZ camera,
-        then return any response until it includes the VISCA endbytes, "ff".
+        then return any response until it includes the given terminator bytes.
 
         :param com: Command string (inquiry message). Hexadecimal format.
+        :param terminator: Terminator bytes string. Hexadecimal format. (default = "ff")
         :return: A string comprising the response packets.
         """
         # Clear any existing previous pending input buffer
@@ -407,11 +408,11 @@ class PTZ(Camera):
         # Send the inquiry message
         super(self.__class__, self).command(com)
 
-        # Wait until response packet containing the endbytes are received
+        # Wait until response packet containing the terminator bytes are received
         x = ''
-        while "ff" not in x:
+        while terminator not in x:
             x += super(self.__class__, self).read()
-            if "ff" in x:
+            if terminator in x:
                 break
 
         # Return the response packet
