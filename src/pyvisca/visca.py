@@ -705,6 +705,74 @@ class PTZ(Camera):
         # Sending the command
         return self.comm(hs)
 
+    def set_pan_tilt(self, pan=0, tilt=0, pan_speed=5, tilt_speed=5):
+        """Manually set the PTZ's absolute pan and tilt positions.
+
+        :param pan: In integer, the absolute pan position (from -32767 to 32767).
+        :param tilt: In integer, the absolute tilt position (from -32767 to 32767).
+        :param pan_speed: In integer, the speed of the pan movement (0-24).
+        :param tilt_speed: In integer, the speed of the tilt movement (0-24).
+        :return: True if successful, False if not.
+        """
+        if pan < -32767 or pan > 32767 or type(pan) != int:
+            print('Invalid absolute pan value')
+            return False
+        if tilt < -32767 or tilt > 32767 or type(tilt) != int:
+            print('Invalid absolute tilt value')
+            return False
+
+        # Calculating the parameter values
+        if pan < 0:
+            pan = 65535 + pan
+        if tilt < 0:
+            tilt = 65535 + tilt
+
+        # Creating the parameter values
+        p = self._zero_pad(hex(pan)[2:], 4)
+        t = self._zero_pad(hex(tilt)[2:], 4)
+        ps = self._zero_pad(hex(pan_speed)[2:], 2)
+        ts = self._zero_pad(hex(pan_speed)[2:], 2)
+
+        # Creating the command hex-string
+        hs = f'81010602{ps}{ts}0{p[0]}0{p[1]}0{p[2]}0{p[3]}0{t[0]}0{t[1]}0{t[2]}0{t[3]}FF'
+
+        # Sending the command
+        return self.comm(hs)
+
+    def set_pan_tilt_rel(self, pan=0, tilt=0, pan_speed=5, tilt_speed=5):
+        """Manually set the PTZ's relative pan and tilt positions.
+
+        :param pan: In integer, the relative pan position (from -32767 to 32767).
+        :param tilt: In integer, the relative tilt position (from -32767 to 32767).
+        :param pan_speed: In integer, the speed of the pan movement (0-24).
+        :param tilt_speed: In integer, the speed of the tilt movement (0-24).
+        :return: True if successful, False if not.
+        """
+        if pan < -32767 or pan > 32767 or type(pan) != int:
+            print('Invalid absolute pan value')
+            return False
+        if tilt < -32767 or tilt > 32767 or type(tilt) != int:
+            print('Invalid absolute tilt value')
+            return False
+
+        # Calculating the parameter values
+        if pan < 0:
+            pan = 65535 + pan
+        if tilt < 0:
+            tilt = 65535 + tilt
+
+        # Creating the parameter values
+        p = self._zero_pad(hex(pan)[2:], 4)
+        t = self._zero_pad(hex(tilt)[2:], 4)
+        ps = self._zero_pad(hex(pan_speed)[2:], 2)
+        ts = self._zero_pad(hex(pan_speed)[2:], 2)
+
+        # Creating the command hex-string
+        hs = f'81010603{ps}{ts}0{p[0]}0{p[1]}0{p[2]}0{p[3]}0{t[0]}0{t[1]}0{t[2]}0{t[3]}FF'
+
+        # Sending the command
+        return self.comm(hs)
+
     def set_tilt(self, val=0, speed=5):
         """Manually set the PTZ's absolute tilt position.
         
